@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# slack-random-status.sh - Set random Slack status from file
+
+STATUSES_FILE="$HOME/slack_statuses.txt"
+SLACK_STATUS_SCRIPT="$HOME/bin/slack-status.sh"
+
+# Check if statuses file exists
+if [ ! -f "$STATUSES_FILE" ]; then
+  echo "Error: Statuses file not found: $STATUSES_FILE"
+  echo "Create the file and add status lines (one per line)"
+  exit 1
+fi
+
+# Check if slack-status.sh is available in PATH
+if ! command -v "$SLACK_STATUS_SCRIPT" >/dev/null 2>&1; then
+  echo "Error: slack-status.sh not found in PATH: $SLACK_STATUS_SCRIPT"
+  exit 1
+fi
+
+# Read non-empty lines from file into array
+mapfile -t statuses < <(grep -v '^[[:space:]]*$' "$STATUSES_FILE")
+
+# Check if any statuses were found
+if [ ${#statuses[@]} -eq 0 ]; then
+  echo "Error: No non-empty status lines found in $STATUSES_FILE"
+  exit 1
+fi
+
+# Select random status
+random_index=$((RANDOM % ${#statuses[@]}))
+selected_status="${statuses[$random_index]}"
+
+# Trim whitespace from selected status
+selected_status=$(echo "$selected_status" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+# Check if status exceeds maximum length (144 characters)
+if [ ${#selected_status} -gt 144 ]; then
+  echo "Error: Status too long (${#selected_status} characters, maximum is 144): $selected_status"
+  exit 1
+fi
+
+# Call slack-status.sh with the selected status
+"$SLACK_STATUS_SCRIPT" "$selected_status" ":good_news:"
+
