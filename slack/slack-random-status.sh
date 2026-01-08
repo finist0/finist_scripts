@@ -40,6 +40,13 @@ if [ ${#selected_status} -gt 144 ]; then
   exit 1
 fi
 
+# Check current status expiration - if set to "don't clear" (0), don't change it
+current_expiration=$("$SLACK_STATUS_SCRIPT" get -f expiration 2>/dev/null)
+if [ "$current_expiration" = "0" ]; then
+  echo "Status is set to 'don't clear', skipping update"
+  exit 0
+fi
+
 # Call slack-status.sh with the selected status (set for 3 hours)
 "$SLACK_STATUS_SCRIPT" set "$selected_status" ":good_news:" 10800
 
