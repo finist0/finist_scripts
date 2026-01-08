@@ -3,7 +3,7 @@
 # slack-random-status.sh - Set random Slack status from file
 
 STATUSES_FILE="$HOME/slack_statuses.txt"
-SLACK_STATUS_SCRIPT="$HOME/bin/slack-status.sh"
+SLACK_STATUS_SCRIPT="$HOME/bin/finist_scripts/slack/slack-status.sh"
 
 # Check if statuses file exists
 if [ ! -f "$STATUSES_FILE" ]; then
