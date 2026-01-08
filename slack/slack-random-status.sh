@@ -40,6 +40,6 @@ if [ ${#selected_status} -gt 144 ]; then
   exit 1
 fi
 
-# Call slack-status.sh with the selected status
-"$SLACK_STATUS_SCRIPT" "$selected_status" ":good_news:"
+# Call slack-status.sh with the selected status (set for 3 hours)
+"$SLACK_STATUS_SCRIPT" set "$selected_status" ":good_news:" 10800
 
