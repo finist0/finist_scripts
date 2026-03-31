@@ -40,9 +40,12 @@ if [ ${#selected_status} -gt 144 ]; then
   exit 1
 fi
 
-# Check current status expiration - if set to "don't clear" (0), don't change it
+# If expiration is 0, Slack means "don't clear" — but after a timed status ends,
+# the profile can show empty text with expiration 0. Only skip when there is
+# real status text (user chose "don't clear" intentionally).
 current_expiration=$("$SLACK_STATUS_SCRIPT" get -f expiration 2>/dev/null)
-if [ "$current_expiration" = "0" ]; then
+current_text=$("$SLACK_STATUS_SCRIPT" get -f text 2>/dev/null)
+if [ "$current_expiration" = "0" ] && [ -n "$current_text" ]; then
   echo "Status is set to 'don't clear', skipping update"
   exit 0
 fi

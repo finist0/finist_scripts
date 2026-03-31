@@ -42,7 +42,7 @@ Main script for getting and setting Slack status.
 
 ### slack-random-status.sh
 
-Automatically sets a random status from a predefined list. Respects manually set "don't clear" statuses (won't overwrite them).
+Automatically sets a random status from a predefined list. Respects manually set "don't clear" statuses when status text is non-empty (won't overwrite them).
 
 **Usage:**
 
@@ -62,7 +62,7 @@ Automatically sets a random status from a predefined list. Respects manually set
 
 2. The script will:
    - Select a random status from the file
-   - Check if current status is set to "don't clear" (if so, skip update)
+   - Skip update only if expiration is "don't clear" (0) **and** status text is non-empty
    - Set the selected status for 3 hours
    - Use `:good_news:` emoji by default
 
@@ -159,7 +159,7 @@ This will update your status every 2 hours with a random status from the list.
 
 ### Respecting Manual Status
 
-If you manually set a status in Slack UI with "don't clear" option (e.g., "Vacationing"), the `slack-random-status.sh` script will detect this and skip the update, preserving your manual status.
+If you manually set a status in Slack UI with "don't clear" option (e.g., "Vacationing"), the script skips the update while that text is present. If the status text is empty but expiration still shows 0 (e.g. after a timed status expired while you were away), a new random status is applied.
 
 ## Notes
 
