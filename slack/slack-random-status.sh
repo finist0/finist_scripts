@@ -19,7 +19,7 @@ if ! command -v "$SLACK_STATUS_SCRIPT" >/dev/null 2>&1; then
 fi
 
 # Read non-empty lines from file into array
-mapfile -t statuses < <(grep -v '^[[:space:]]*$' "$STATUSES_FILE")
+mapfile -t statuses < <(grep -vE '^[[:space:]]*($|#)' "$STATUSES_FILE")
 
 # Check if any statuses were found
 if [ ${#statuses[@]} -eq 0 ]; then
