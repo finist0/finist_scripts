@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Wrapper: drop Cursor-injected --trailer "Made-with: Cursor" before calling real git.
+# Ensure /root/bin precedes /usr/bin in PATH (e.g. export PATH="/root/bin:$PATH").
+REAL_GIT=/usr/bin/git
+
+if [[ $# -eq 0 ]]; then
+  exec "$REAL_GIT"
+fi
+
+filtered=()
+args=("$@")
+n=${#args[@]}
+i=0
+
+while (( i < n )); do
+  a=${args[i]}
+  if [[ $a == --trailer ]]; then
+    if (( i + 1 < n )) && [[ ${args[i + 1]} == 'Made-with: Cursor' || ${args[i + 1]} == 'Co-authored-by: Cursor <cursoragent@cursor.com>' ]]; then
+      i=$((i + 2))
+      continue
+    fi
+  elif [[ $a == --trailer=* ]]; then
+    val=${a#--trailer=}
+    val=${val#\"}
+    val=${val%\"}
+    val=${val#\'}
+    val=${val%\'}
+    if [[ $val == 'Made-with: Cursor' || $val == 'Co-authored-by: Cursor <cursoragent@cursor.com>' ]]; then
+      i=$((i + 1))
+      continue
+    fi
+  fi
+  filtered+=("$a")
+  i=$((i + 1))
+done
+
+exec "$REAL_GIT" "${filtered[@]}"
